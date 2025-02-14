@@ -3,25 +3,28 @@
 #ifndef SOURCE_HPP
 #define SOURCE_HPP
 
-#include <string.h>
+//#include <string.h>
 #include <iostream>
-
+#include <cstddef>
 
 class String {
 public:
-	String();
-	explicit String(int lenght);
-	String(const char* std);
+	// Конструкторы
+	String(); // Конструктор по умолчанию
+	String(const char* str); // Конструктор из C-строки
+	String(const String& other); // Конструктор копирования
+	String(String&& other) noexcept; // Конструктор перемещения
 
-	~String();
-	String(const String& other);
-	String& operator=(const String& other);
+	//Деструктор
+	~String(); 
+	
+	// Операторы
+	String& operator=(const String& other); // Оператор присваивания копированием
+	String& operator=(String&& other) noexcept; // Оператор присваивания перемещением
+	String& operator=(const char* str); // Оператор присваивания из C-строки
 
-	String(String&& other)noexcept;
-	String& operator=(String&& other);
-
-
-	void reserve(int new_len);
+	
+	/*void reserve(int new_len);
 	void shrink_to_fit();
 	void clean();
 	void empty()const;
@@ -43,10 +46,20 @@ public:
 	const char& operator[](int i)const noexcept;
 
 	char& at(int i);
-	const char& at(int i)const;
+	const char& at(int i)const;*/
+
+	// Методы
+	std::size_t size() const; // Возвращает длину строки
+	const char* c_str() const; // Возвращает C-строку
+
+	// Оператор вывода
+	friend std::ostream& operator<<(std::ostream& os, const String& str);
+
 
 private:
-	char* str_;
-	size_t capacity;
+	char* str_; //Указатель на массив символов
+	std::size_t length; // Длина
+	void copyData(const char* str); 
+	std::size_t capacity;
 };
 #endif // !SOURCE_HPP
