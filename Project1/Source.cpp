@@ -1,41 +1,108 @@
 #include "Source.hpp"
+#include <cstring> 
 
-String::String()
-{
+// Конструктор по умолчанию
+String::String() : str_(nullptr), length(0) {}
+
+// Конструктор из C-строки
+String::String(const char* str) {
+    if (str) {
+        length = std::strlen(str);
+        str_ = new char[length + 1];
+        std::strcpy(str_, str);
+    }
+    else {
+        str_ = nullptr;
+        length = 0;
+    }
 }
 
-String::String(int lenght)
-{
+// Конструктор копирования
+String::String(const String& other) {
+    copyData(other.str_);
 }
 
-String::String(const char* std)
-{
-}
-
-String::~String()
-{
-}
-
-String::String(const String& other)
-{
-}
-
+// Конструктор перемещения
 String::String(String&& other) noexcept
-{
+    : str_(other.str_), length(other.length) {
+    other.str_ = nullptr;
+    other.length = 0;
 }
 
-void String::reserve(int new_len)
-{
+// Деструктор
+String::~String() {
+    delete[] str_;
 }
 
-void String::shrink_to_fit()
-{
+// Оператор присваивания копированием
+String& String::operator=(const String& other) {
+    if (this != &other) {
+        delete[] str_;
+        copyData(other.str_);
+    }
+    return *this;
 }
 
-void String::clean()
-{
+// Оператор присваивания перемещением
+String& String::operator=(String&& other) noexcept {
+    if (this != &other) {
+        delete[] str_;
+        str_ = other.str_;
+        length = other.length;
+        other.str_ = nullptr;
+        other.length = 0;
+    }
+    return *this;
 }
 
-void String::empty() const
-{
+// Оператор присваивания из C-строки
+String& String::operator=(const char* str) {
+    if (str_ != str) {
+        delete[] str_;
+        if (str) {
+            length = std::strlen(str);
+            str_ = new char[length + 1];
+            std::strcpy(str_, str);
+        }
+        else {
+            str_ = nullptr;
+            length = 0;
+        }
+    }
+    return *this;
 }
+
+// Возвращает длину строки
+std::size_t String::size() const {
+    return length;
+}
+
+// Возвращает C-строку
+const char* String::c_str() const {
+    return str_ ? str_ : "";
+}
+
+// Вспомогательная функция для копирования данных
+void String::copyData(const char* str) {
+    if (str) {
+        length = std::strlen(str);
+        str_ = new char[length + 1];
+        std::strcpy(str_, str);
+    }
+    else {
+        str_ = nullptr;
+        length = 0;
+    }
+}
+
+// Оператор вывода
+std::ostream& operator<<(std::ostream& os, const String& str) {
+    os << str.c_str();
+    return os;
+}
+
+
+
+
+
+
